@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adrian D. Falk – Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --accent: #c8a96e;
+    --accent2: #7eb8c9;
+    --text: #e8e6df;
+    --muted: #7a7870;
+    --border: rgba(200,169,110,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(200,169,110,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99997;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, border-color 0.3s;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); letter-spacing: 0.1em; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; align-items: center; padding: 8rem 4rem 4rem; position: relative; overflow: hidden; }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(200,169,110,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 60% at 20% 80%, rgba(126,184,201,0.05) 0%, transparent 60%);
+  }
+  .hero-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: linear-gradient(to bottom, transparent, var(--border), transparent); }
+  .hero-content {
+    position: relative; z-index: 2; max-width: 1200px; width: 100%; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    animation: fadeInUp 1s ease forwards;
+  }
+  .hero-label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .hero-label::before { content: ''; width: 2rem; height: 1px; background: var(--accent); }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.0; font-weight: 900; margin-bottom: 1.5rem; }
+  h1 span { display: block; color: var(--accent); font-style: italic; }
+  .hero-desc { color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 2.5rem; max-width: 420px; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn {
+    padding: 0.85rem 2rem; font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border: none;
+    cursor: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); font-weight: 500; }
+  .btn-primary:hover { background: #d4b87a; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(200,169,110,0.3); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; position: relative; overflow: hidden; transition: transform 0.3s, border-color 0.3s; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 0; background: var(--accent); transition: height 0.4s; }
+  .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .stat-card:hover::before { height: 100%; }
+  .stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--accent); font-weight: 700; line-height: 1; margin-bottom: 0.5rem; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* SECTIONS */
+  section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .section-header { margin-bottom: 3.5rem; display: flex; align-items: baseline; gap: 2rem; }
+  .section-number { font-family: 'Playfair Display', serif; font-size: 5rem; color: rgba(200,169,110,0.1); font-weight: 900; line-height: 1; flex-shrink: 0; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; }
+  .section-title em { color: var(--accent); font-style: italic; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 0.5rem; bottom: 0.5rem; width: 1px; background: linear-gradient(to bottom, var(--accent), transparent); }
+  .timeline-item { position: relative; padding: 0 0 3rem 2.5rem; opacity: 0; transform: translateX(-20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-dot { position: absolute; left: -2.1rem; top: 0.35rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 15px rgba(200,169,110,0.5); }
+  .timeline-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
+  .timeline-company { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+  .timeline-date { font-size: 0.75rem; color: var(--muted); }
+  .timeline-role { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; }
+  .timeline-points { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .timeline-points li { font-size: 0.875rem; color: var(--muted); padding-left: 1.2rem; position: relative; line-height: 1.6; }
+  .timeline-points li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; }
+
+  /* SKILLS */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .skill-category { background: var(--card); border: 1px solid var(--border); padding: 2rem; opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s, border-color 0.3s; }
+  .skill-category.visible { opacity: 1; transform: translateY(0); }
+  .skill-category:hover { border-color: var(--accent); }
+  .skill-cat-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .skill-tag { padding: 0.4rem 0.9rem; font-size: 0.78rem; background: rgba(200,169,110,0.07); border: 1px solid rgba(200,169,110,0.2); color: var(--text); transition: all 0.2s; }
+  .skill-tag:hover { background: rgba(200,169,110,0.15); border-color: var(--accent); color: var(--accent); }
+
+  /* PROJECTS */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+  .project-card { background: var(--card); border: 1px solid var(--border); padding: 2rem; position: relative; overflow: hidden; transition: all 0.3s; opacity: 0; transform: translateY(20px); }
+  .project-card.visible { opacity: 1; transform: translateY(0); }
+  .project-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, var(--accent), var(--accent2)); transform: scaleX(0); transition: transform 0.3s; }
+  .project-card:hover { transform: translateY(-6px); border-color: rgba(200,169,110,0.4); }
+  .project-card:hover::after { transform: scaleX(1); }
+  .project-tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent2); margin-bottom: 1rem; }
+  .project-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; }
+  .project-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .project-badge { display: inline-block; margin-top: 1rem; padding: 0.3rem 0.8rem; font-size: 0.7rem; background: rgba(200,169,110,0.1); color: var(--accent); border: 1px solid rgba(200,169,110,0.3); }
+
+  /* EDUCATION */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .edu-card { background: var(--card); border: 1px solid var(--border); padding: 2rem; transition: all 0.3s; opacity: 0; transform: translateY(20px); }
+  .edu-card.visible { opacity: 1; transform: translateY(0); }
+  .edu-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .edu-period { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .edu-degree { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .edu-school { font-size: 0.875rem; color: var(--muted); margin-bottom: 1rem; }
+  .edu-modules { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+  /* EHRENAMT */
+  .ehren-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .ehren-card { background: var(--card); border: 1px solid var(--border); padding: 1.75rem; transition: all 0.3s; opacity: 0; transform: translateY(20px); }
+  .ehren-card.visible { opacity: 1; transform: translateY(0); }
+  .ehren-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
+  .ehren-period { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.5rem; }
+  .ehren-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .ehren-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+  /* CONTACT */
+  .contact-wrapper { background: var(--card); border: 1px solid var(--border); padding: 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .contact-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
+  .contact-title em { color: var(--accent); font-style: italic; }
+  .contact-sub { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem; }
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; background: var(--surface); border: 1px solid var(--border); text-decoration: none; color: var(--text); font-size: 0.875rem; transition: all 0.3s; }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateX(4px); }
+  .contact-link-icon { font-size: 1rem; width: 1.5rem; text-align: center; color: var(--accent); }
+  button.contact-link { cursor: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal { background: var(--card); border: 1px solid var(--border); padding: 2.5rem; width: 90%; max-width: 480px; position: relative; transform: translateY(20px); transition: transform 0.3s; }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .modal-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+  .modal-sub span { color: var(--accent); font-family: monospace; }
+  .email-options { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .email-option { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); color: var(--text); text-decoration: none; font-size: 0.875rem; transition: all 0.25s; }
+  .email-option:hover { border-color: var(--accent); color: var(--accent); transform: translateX(4px); }
+  .email-option-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .email-option-name { font-weight: 500; font-size: 0.875rem; }
+  .email-option-desc { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+  .modal-divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+  .copy-row { display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); padding: 0.75rem 1rem; }
+  .copy-email { flex: 1; font-size: 0.85rem; color: var(--muted); font-family: monospace; }
+  .copy-btn { padding: 0.4rem 1rem; background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.3); color: var(--accent); font-size: 0.75rem; cursor: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; letter-spacing: 0.05em; }
+  .copy-btn:hover { background: rgba(200,169,110,0.2); }
+  .copy-btn.copied { background: rgba(100,200,100,0.15); border-color: rgba(100,200,100,0.4); color: #6dc86d; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: none; padding: 0.25rem 0.5rem; transition: color 0.2s; }
+  .modal-close:hover { color: var(--text); }
+
+  /* SIDEBAR */
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    z-index: 9000; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .sidebar-overlay.active { opacity: 1; pointer-events: all; }
+
+  .sidebar {
+    position: fixed; top: 0; right: -420px; bottom: 0;
+    width: 400px; background: var(--card);
+    border-left: 1px solid var(--border);
+    z-index: 9001; transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .sidebar.active { right: 0; }
+
+  .sidebar-header {
+    padding: 2rem 2rem 0;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+    flex-shrink: 0;
+  }
+  .sidebar-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+
+  .sidebar-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 1.2rem; cursor: none; padding: 0.25rem 0.5rem; transition: color 0.2s;
+  }
+  .sidebar-close:hover { color: var(--text); }
+
+  .sidebar-tabs {
+    display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .sidebar-tab {
+    flex: 1; padding: 1rem; background: none; border: none;
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: none; transition: all 0.3s; border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .sidebar-tab:hover { color: var(--text); }
+  .sidebar-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .sidebar-content { flex: 1; overflow-y: auto; padding: 2rem; }
+  .sidebar-panel { display: none; }
+  .sidebar-panel.active { display: block; }
+
+  .sidebar-panel h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    margin-bottom: 1rem; color: var(--accent);
+  }
+  .sidebar-panel p {
+    font-size: 0.9rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem;
+  }
+
+  .milestone {
+    display: flex; gap: 1rem; margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+  }
+  .milestone:last-child { border-bottom: none; }
+  .milestone-year {
+    font-family: 'Playfair Display', serif; font-size: 1rem;
+    color: var(--accent); font-weight: 700; flex-shrink: 0; width: 50px;
+  }
+  .milestone-text { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .milestone-text strong { color: var(--text); display: block; margin-bottom: 0.2rem; }
+
+  .full-divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.08em; }
+  .footer-name { font-family: 'Playfair Display', serif; color: var(--accent); font-size: 0.9rem; }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 6rem 1.5rem 3rem; }
+    .hero-content { grid-template-columns: 1fr; gap: 3rem; }
+    section { padding: 4rem 1.5rem; }
+    .contact-wrapper { grid-template-columns: 1fr; padding: 2rem; gap: 2rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Adrian D. Falk</div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-tabs">
+    <button class="sidebar-tab active" onclick="switchTab('ueber')" id="tab-ueber">Über mich</button>
+    <button class="sidebar-tab" onclick="switchTab('meilensteine')" id="tab-meilensteine">Meilensteine</button>
+  </div>
+  <div class="sidebar-content">
+    <div class="sidebar-panel active" id="panel-ueber">
+      <h3>Wer bin ich?</h3>
+      <p>Ich bin Adrian, 21 Jahre alt und studiere Wirtschaftsingenieurwesen mit Schwerpunkt Maschinenbau an der Technischen Hochschule Lübeck. Meine Stärke liegt in der Verbindung von technischem Verständnis und wirtschaftlichem Denken.</p>
+      <h3>Was treibt mich an?</h3>
+      <p>Ich begeistere mich für KI, neue Technologien und die Frage, wie man Prozesse smarter gestalten kann. Neben dem Studium engagiere ich mich als Tutor, im Formula Student Team und in der Jugendarbeit.</p>
+      <h3>Was suche ich?</h3>
+      <p>Ich bin auf der Suche nach Positionen im Bereich Maschinenbau, Projektmanagement und Prozessoptimierung – wo ich sowohl technisch als auch strategisch wirken kann.</p>
+    </div>
+    <div class="sidebar-panel" id="panel-meilensteine">
+      <div class="milestone">
+        <div class="milestone-year">2023</div>
+        <div class="milestone-text"><strong>Abitur</strong>Baltic-Gesamtschule Lübeck – Schwerpunkte Mathematik, Biologie & Englisch</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2024</div>
+        <div class="milestone-text"><strong>Studiumsbeginn</strong>B. Sc. Wirtschaftsingenieurwesen an der TH Lübeck, Schwerpunkt Maschinenbau</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2025</div>
+        <div class="milestone-text"><strong>Werkstudent DIS AG</strong>Erste Berufserfahrung im Personalwesen – Digitalisierung & SQL</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2025</div>
+        <div class="milestone-text"><strong>Leitender Tutor TH Lübeck</strong>Koordination des Tutoriums Technische Mechanik für über 100 Studenten</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2025</div>
+        <div class="milestone-text"><strong>Hanseatic Hackathon</strong>LLM-Entwicklung für automatische Verpackungsversionierung – Projektmanagement</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2026</div>
+        <div class="milestone-text"><strong>Praktikum Maschinenbau</strong>Confurius Antriebs- u. Pumpenservice – Analyse & Optimierung technischer Abläufe</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">E-Mail schreiben</div>
+    <p class="modal-sub">Wähle deinen E-Mail-Anbieter. Nachricht geht direkt an <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8beaa5ede4f9e7eae5f8e0e2b2becbece6eae2e7a5e8e4e6">[email&#160;protected]</a></span></p>
+    <div class="email-options">
+      <a class="email-option" href="https://mail.google.com/mail/?view=cm&to=a.forlanski95@gmail.com&su=Kontaktanfrage" target="_blank">
+        <div class="email-option-icon">G</div>
+        <div><div class="email-option-name">Gmail</div><div class="email-option-desc">Öffnet Gmail im Browser</div></div>
+        <span style="margin-left:auto;color:var(--muted);font-size:0.8rem;">↗</span>
+      </a>
+      <a class="email-option" href="https://outlook.live.com/mail/0/deeplink/compose?to=a.forlanski95@gmail.com&subject=Kontaktanfrage" target="_blank">
+        <div class="email-option-icon">⊞</div>
+        <div><div class="email-option-name">Outlook / Hotmail</div><div class="email-option-desc">Öffnet Outlook Web im Browser</div></div>
+        <span style="margin-left:auto;color:var(--muted);font-size:0.8rem;">↗</span>
+      </a>
+      <a class="email-option" href="https://compose.mail.yahoo.com/?to=a.forlanski95@gmail.com&subject=Kontaktanfrage" target="_blank">
+        <div class="email-option-icon">Y</div>
+        <div><div class="email-option-name">Yahoo Mail</div><div class="email-option-desc">Öffnet Yahoo Mail im Browser</div></div>
+        <span style="margin-left:auto;color:var(--muted);font-size:0.8rem;">↗</span>
+      </a>
+      <a class="email-option" href="/cdn-cgi/l/email-protection#52337c343d203e333c21393b6b6712353f333b3e7c313d3f6d212730383731266f193d3c26333926333c3420333537">
+        <div class="email-option-icon">✉</div>
+        <div><div class="email-option-name">Standard Mail-App</div><div class="email-option-desc">Apple Mail, Thunderbird, etc.</div></div>
+        <span style="margin-left:auto;color:var(--muted);font-size:0.8rem;">↗</span>
+      </a>
+    </div>
+    <div class="modal-divider"></div>
+    <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;letter-spacing:0.05em;text-transform:uppercase;">Oder E-Mail-Adresse kopieren</p>
+    <div class="copy-row">
+      <span class="copy-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7e3179706d737e716c7476262a5f78727e7673317c7072">[email&#160;protected]</a></span>
+      <button class="copy-btn" id="copyBtn" onclick="copyEmail()">Kopieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Adrian D. Falk</div>
+  <ul class="nav-links">
+    <li><a href="#erfahrung">Erfahrung</a></li>
+    <li><a href="#projekte">Projekte</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#bildung">Bildung</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-label">Wirtschaftsingenieur & Prozessoptimierer</div>
+      <h1>Adrian D.<span>Falk</span></h1>
+      <p class="hero-desc">Student des Wirtschaftsingenieurwesens an der TH Lübeck mit Leidenschaft für KI, datengetriebene Entscheidungen und innovative Technologien.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="openModal()">Kontakt aufnehmen ↗</button>
+        <button class="btn btn-ghost" onclick="openSidebar()">Mehr erfahren →</button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-number">100+</div><div class="stat-label">Studenten betreut</div></div>
+      <div class="stat-card"><div class="stat-number">B.Sc.</div><div class="stat-label">Vorläufiger Abschluss</div></div>
+      <div class="stat-card"><div class="stat-number">3+</div><div class="stat-label">Jahre Praxiserfahrung</div></div>
+      <div class="stat-card"><div class="stat-number">TH</div><div class="stat-label">Lübeck</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="full-divider"></div>
+
+<!-- ERFAHRUNG -->
+<section id="erfahrung">
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <h2 class="section-title">Berufliche <em>Erfahrung</em></h2>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-company">Confurius Antriebs- u. Pumpenservice, Lübeck</span>
+        <span class="timeline-date">02.2026 – 04.2026</span>
+      </div>
+      <div class="timeline-role">Praktikum Maschinenbau</div>
+      <ul class="timeline-points">
+        <li>Analyse und Optimierung von technischen Abläufen</li>
+        <li>Mitarbeit entlang der Produktionslinie in Wartung & Instandhaltung</li>
+        <li>Arbeit nach den 5 Agilen Werten</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-company">Technische Hochschule Lübeck</span>
+        <span class="timeline-date">seit 09.2025</span>
+      </div>
+      <div class="timeline-role">Leitender Tutor – Technische Mechanik 1 & 2</div>
+      <ul class="timeline-points">
+        <li>Koordination und Planung des Tutoriums für über 100 Studenten</li>
+        <li>Arbeiten nach dem Kaizen-Prinzip zur kontinuierlichen Verbesserung</li>
+        <li>Vermittlung technischer Sachverhalte auf verständlicher Ebene</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-meta">
+        <span class="timeline-company">DIS AG, Lübeck</span>
+        <span class="timeline-date">01.2025 – 06.2025</span>
+      </div>
+      <div class="timeline-role">Werkstudent – Personalwesen</div>
+      <ul class="timeline-points">
+        <li>Digitale Dokumentation und Optimierung von über 100 Kundendaten</li>
+        <li>Arbeit mit Informationssystemen wie Excel und SQL</li>
+        <li>Regelmäßige Fortschritt-Reports in Team Meetings</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- PROJEKTE -->
+<section id="projekte">
+  <div class="section-header">
+    <div class="section-number">02</div>
+    <h2 class="section-title">Ausgewählte <em>Projekte</em></h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-tag">Controlling · Unternehmensplanung</div>
+      <div class="project-title">Controlling System für Puma SE</div>
+      <p class="project-desc">Entwicklung einer treiberbasierten Planung und eines Kennzahlensystems zur Unternehmenssteuerung. Abschlussarbeit an der TH Lübeck.</p>
+      <span class="project-badge">Note: 2,0</span>
+    </div>
+    <div class="project-card">
+      <div class="project-tag">KI · LLM · Hackathon</div>
+      <div class="project-title">Hanseatic Hackathon – Brüggen Case</div>
+      <p class="project-desc">Entwicklung eines LLM zur automatischen Versionierung von Verpackungen nach länderspezifischen Normen. Verantwortlich für das Projektmanagement des Teams.</p>
+      <span class="project-badge">LLM Development</span>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <h2 class="section-title">Kenntnisse & <em>Skills</em></h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-category">
+      <div class="skill-cat-label">IT-Grundlagen</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Python</span><span class="skill-tag">BPMN</span>
+        <span class="skill-tag">JSON</span><span class="skill-tag">XML/XSD</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <div class="skill-cat-label">Fortgeschrittene IT</div>
+      <div class="skill-tags">
+        <span class="skill-tag">SQL</span><span class="skill-tag">Office 365</span>
+        <span class="skill-tag">Prompt Engineering</span><span class="skill-tag">LLM</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <div class="skill-cat-label">Soft Skills</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Agiles Denken</span><span class="skill-tag">Analytik</span>
+        <span class="skill-tag">Teammanagement</span><span class="skill-tag">Zeitmanagement</span>
+        <span class="skill-tag">Organisation</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <div class="skill-cat-label">Sprachen</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Deutsch (Muttersprache)</span>
+        <span class="skill-tag">Englisch B2</span>
+        <span class="skill-tag">Geschäftsenglisch</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- BILDUNG -->
+<section id="bildung">
+  <div class="section-header">
+    <div class="section-number">04</div>
+    <h2 class="section-title">Bildungs<em>weg</em></h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-period">seit 08.2024</div>
+      <div class="edu-degree">B. Sc. Wirtschaftsingenieurwesen</div>
+      <div class="edu-school">Technische Hochschule Lübeck</div>
+      <div class="edu-modules">Schwerpunkt: Maschinenbau<br>Module: Mechanik, Informationssysteme, Controlling</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-period">2010 – 2023</div>
+      <div class="edu-degree">Allgemeine Hochschulreife</div>
+      <div class="edu-school">Baltic-Gesamtschule</div>
+      <div class="edu-modules">Schwerpunkte: Mathematik, Biologie, Englisch</div>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- EHRENAMT -->
+<section id="ehrenamt">
+  <div class="section-header">
+    <div class="section-number">05</div>
+    <h2 class="section-title">Ehren<em>ämter</em></h2>
+  </div>
+  <div class="ehren-grid">
+    <div class="ehren-card">
+      <div class="ehren-period">seit 2025</div>
+      <div class="ehren-title">Seagulls Formula Student Team</div>
+      <div class="ehren-desc">Mitglied im Fertigungsbereich</div>
+    </div>
+    <div class="ehren-card">
+      <div class="ehren-period">2022 – 2024</div>
+      <div class="ehren-title">Privater Nachhilfelehrer</div>
+      <div class="ehren-desc">Verantwortlich für über 10 Schüler</div>
+    </div>
+    <div class="ehren-card">
+      <div class="ehren-period">2024 – 2025</div>
+      <div class="ehren-title">Trainer im K32 Verein</div>
+      <div class="ehren-desc">Leitung der Kindersport-Kurse</div>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- KONTAKT -->
+<section id="kontakt">
+  <div class="contact-wrapper">
+    <div>
+      <div class="hero-label" style="margin-bottom:1rem;">Bereit für neue Chancen</div>
+      <div class="contact-title">Lass uns <em>reden</em></div>
+      <p class="contact-sub">Ich bin offen für spannende Positionen im Bereich Maschinenbau, Projektmanagement und Prozessoptimierung. Schreib mir gerne.</p>
+      <button class="btn btn-primary" onclick="openModal()">E-Mail schreiben ↗</button>
+    </div>
+    <div class="contact-links">
+      <button class="contact-link" onclick="openModal()">
+        <span class="contact-link-icon">✉</span>
+        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22430c444d504e434c51494b1b1762454f434b4e0c414d4f">[email&#160;protected]</a>
+      </button>
+      <a href="tel:01520866472" class="contact-link">
+        <span class="contact-link-icon">☎</span>01520 866472
+      </a>
+      <a href="https://www.linkedin.com/in/adrian-d-falk-875vf" target="_blank" class="contact-link">
+        <span class="contact-link-icon">in</span>linkedin.com/in/adrian-d-falk-875vf
+      </a>
+      <div class="contact-link" style="cursor:default;">
+        <span class="contact-link-icon">📍</span>Auguste-Schmidt Str. 8, 23558 Lübeck
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('active');
+    document.getElementById('sidebarOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  function switchTab(name) {
+    document.querySelectorAll('.sidebar-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.sidebar-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+  function openModal() {
+    document.getElementById('emailModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('emailModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  function copyEmail() {
+    navigator.clipboard.writeText('a.forlanski95@gmail.com').then(function() {
+      var btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Kopiert!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Kopieren'; btn.classList.remove('copied'); }, 2500);
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeSidebar(); closeModal(); }
+  });
+</script>
+
+<footer>
+  <span class="footer-name">Adrian D. Falk</span>
+  <span>© 2026 · Wirtschaftsingenieurwesen · TH Lübeck</span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── CURSOR ──
+  var cursor = document.getElementById('cursor');
+  var ring = document.getElementById('cursorRing');
+  var mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX;
+    my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  (function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+
+  document.querySelectorAll('a, button, .stat-card, .skill-tag').forEach(function(el) {
+    el.addEventListener('mouseenter', function() {
+      ring.style.width = '52px';
+      ring.style.height = '52px';
+      ring.style.borderColor = 'rgba(200,169,110,0.9)';
+    });
+    el.addEventListener('mouseleave', function() {
+      ring.style.width = '32px';
+      ring.style.height = '32px';
+      ring.style.borderColor = 'rgba(200,169,110,0.5)';
+    });
+  });
+
+  // ── SIDEBAR ──
+  window.openSidebar = function() {
+    document.getElementById('sidebar').classList.add('active');
+    document.getElementById('sidebarOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  window.closeSidebar = function() {
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  window.switchTab = function(name) {
+    document.querySelectorAll('.sidebar-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.sidebar-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  // ── MODAL ──
+  window.openModal = function() {
+    document.getElementById('emailModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  window.closeModal = function() {
+    document.getElementById('emailModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  window.copyEmail = function() {
+    navigator.clipboard.writeText('a.forlanski95@gmail.com').then(function() {
+      var btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Kopiert!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Kopieren'; btn.classList.remove('copied'); }, 2500);
+    });
+  }
+
+  document.getElementById('emailModal').addEventListener('click', function(e) {
+    if (e.target === this) window.closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { window.closeSidebar(); window.closeModal(); }
+  });
+
+  // ── SCROLL ANIMATIONS ──
+  var observer = new IntersectionObserver(function(entries)
